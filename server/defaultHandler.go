@@ -1,8 +1,6 @@
 package server
 
 import (
-	_ "errors"
-	_ "fmt"
 	"net/http"
 	"slices"
 	"time"
