@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DiskStatus</title>
+        <style type="text/css">
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                width: 60vw;
+                height: 40vh;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Disk - Free Space</h1>
+            <canvas id="screen"></canvas>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            class ChartDisplayer {
+                #chart;
+
+                constructor(canvasId, label) {
+                    this.screen = document.querySelector(`#${canvasId}`);
+                    this.label = label;
+                    this.endpoint = '/data';
+                }
+
+                configurateChart() {
+                    return new Promise((resolve, reject) => {
+                        if (!this.screen) {
+                            return reject('canvas element not found');
+                        }
+
+                        this.#chart = new Chart(
+                            this.screen,
+                            {
+                                type: 'line',
+                                data: {
+                                    labels: (new Array(10)).fill().map((el, index) => String(index+1) + 'º'),
+                                    datasets: [{
+                                        label: this.label,
+                                        data: [],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: false,
+                                        }
+                                    }
+                                }
+                            },
+                        )
+
+                        resolve();
+                    })               
+                }
+
+                initDataStream() {
+                    const evtSource = new EventSource(this.endpoint);
+
+                    console.log('Starting Text-Stream');
+
+                    evtSource.onerror = (event) => {
+                        console.log(event.data);
+                        evtSource.close();
+                    }
+
+                    evtSource.onmessage = (event) => {
+                        const bytes = event.data.slice(0, -1)
+
+                        if (this.#chart.data.datasets[0].data.length > 10) {
+                            this.#chart.data.datasets[0].data = this.#chart.data.datasets[0].data.slice(1)
+                        }
+
+                        this.#chart.data.datasets[0].data.push(parseInt(bytes))
+                        this.#chart.update();
+                    }
+                }
+            }
+
+            const chartDisplayer = new ChartDisplayer('screen', 'Disk - Free Space');
+            chartDisplayer.configurateChart()
+                .then(_ => chartDisplayer.initDataStream())
+                .catch(error => alert(error))
+        </script>
+    </body>
+</html>
