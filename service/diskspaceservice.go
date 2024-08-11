@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"time"
 
-	"diskstatus/unit"
+	"github.com/isaquecsilva/diskstatus/unit"
 )
 
 type DiskSpaceService struct {

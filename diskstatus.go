@@ -1,9 +1,9 @@
 package main
 
 import (
-	"diskstatus/server"
-	"diskstatus/service"
-	"diskstatus/unit"
+	"github.com/isaquecsilva/diskstatus/server"
+	"github.com/isaquecsilva/diskstatus/service"
+	"github.com/isaquecsilva/diskstatus/unit"
 	"errors"
 	"flag"
 	"io"

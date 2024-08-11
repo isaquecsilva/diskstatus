@@ -1,7 +1,7 @@
 package server
 
 import (
-	"diskstatus/templ"
+	"github.com/isaquecsilva/diskstatus/templ"
 	"io"
 	"log/slog"
 	"net/http"
